@@ -1,0 +1,39 @@
+name: Texture data proposal
+description: Propose openly redistributable finish metadata or procedural patterns.
+title: "[Texture data]: "
+labels: [data, licensing-review]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never attach proprietary vendor drawings, plaque scans, standards text, trade secrets, or customer material. A public webpage is not proof of an open license.
+  - type: input
+    id: name
+    attributes:
+      label: Proposed finish name
+    validations:
+      required: true
+  - type: textarea
+    id: provenance
+    attributes:
+      label: Source, derivation, and license
+      description: Provide URLs, authorship, units, calculation method, and explicit redistribution permission.
+    validations:
+      required: true
+  - type: textarea
+    id: interpretation
+    attributes:
+      label: Physical interpretation
+      description: Explain whether values are nominal, measured, synthesized, or artistic.
+    validations:
+      required: true
+  - type: checkboxes
+    id: certification
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have the right to submit this material under the repository license.
+          required: true
+        - label: I have clearly identified approximations and do not claim official certification.
+          required: true
+

@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a reproducible software defect using non-sensitive data.
+title: "[Bug]: "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not upload customer CAD, personal data, proprietary texture assets, or security vulnerabilities. See SECURITY.md for private reporting.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: "0.3.0"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and operating system
+      placeholder: "Chrome 128, Windows 11"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Include the exact error and whether it occurred during import, selection, texturing, or export.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Use the demo part or a minimal fixture you are legally allowed to publish.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I removed confidential, personal, controlled, and proprietary information.
+          required: true
+        - label: This is not an undisclosed security vulnerability.
+          required: true
+

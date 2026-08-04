@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose an improvement and explain its prototype workflow.
+title: "[Feature]: "
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or engineering problem should be solved?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Include units, accuracy assumptions, UI behavior, and expected output where relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Data and rights
+      options:
+        - label: The request does not require redistributing proprietary textures, confidential CAD, or unlicensed standards content.
+          required: true
+
