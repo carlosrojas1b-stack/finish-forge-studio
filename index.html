@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111715" />
+    <title>Finish Forge Studio — CAD Surface Texturing</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">F</div>
+          <div>
+            <div class="brand-name">Finish Forge Studio</div>
+            <div class="brand-subtitle">CAD surfaces for realistic prototypes</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="button ghost" id="licensesButton">About &amp; licenses</button>
+          <button class="button ghost" id="newProjectButton">New project</button>
+          <button class="button ghost" id="saveProjectButton" disabled>Save project</button>
+          <button class="button primary" id="exportButton" disabled>Export print mesh</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="panel left-panel">
+          <section class="panel-section import-section">
+            <div class="eyebrow">01 · MODEL</div>
+            <h2>Import your part</h2>
+            <label class="drop-zone" id="dropZone">
+              <input id="stepInput" type="file" accept=".step,.stp" hidden />
+              <span class="drop-icon">↥</span>
+              <strong>Drop STEP file here</strong>
+              <span>or click to browse</span>
+            </label>
+            <button class="text-button" id="demoButton">Try the demo part</button>
+            <div class="model-dimensions hidden" id="modelDimensions">
+              <span>Detected size · millimetres</span>
+              <strong id="modelDimensionValue">—</strong>
+            </div>
+          </section>
+
+          <section class="panel-section selection-section">
+            <div class="eyebrow">02 · FACES</div>
+            <div class="section-row">
+              <h2>Select surfaces</h2>
+              <span class="count-pill" id="selectionCount">0 selected</span>
+            </div>
+            <p class="help">Click faces in the viewer. Hold Shift to add or remove faces.</p>
+            <div class="small-actions">
+              <button class="button compact" id="selectAllButton" disabled>Select all</button>
+              <button class="button compact" id="clearSelectionButton" disabled>Clear</button>
+            </div>
+            <div id="faceList" class="face-list empty">
+              <span>No model loaded</span>
+            </div>
+          </section>
+
+          <section class="panel-section print-profile">
+            <div class="eyebrow">03 · OUTPUT</div>
+            <h2>Printer profile</h2>
+            <select id="printerProfile" class="select">
+              <option value="resin-25">Resin · 25 µm ultra-fine</option>
+              <option value="resin-50">Resin · 50 µm extra-fine</option>
+              <option value="resin-fine">Resin · Fine detail</option>
+              <option value="resin-fast">Resin · Fast prototype</option>
+              <option value="fdm-fine">FDM · 0.4 mm nozzle</option>
+            </select>
+            <div class="profile-readout">
+              <div><span>Layer height</span><strong id="layerHeight">25 µm</strong></div>
+              <div><span>Minimum feature</span><strong id="minFeature">0.07 mm</strong></div>
+              <div><span>Mesh target</span><strong id="meshTarget">0.16 mm</strong></div>
+            </div>
+          </section>
+        </aside>
+
+        <section class="viewer-shell">
+          <div id="viewer" class="viewer"></div>
+          <div class="viewer-toolbar" aria-label="Viewer controls">
+            <button class="tool active" id="selectTool" title="Select faces">⌁</button>
+            <button class="tool" id="fitButton" title="Fit model to view">⊙</button>
+            <button class="tool" id="wireframeButton" title="Toggle edges">◇</button>
+          </div>
+          <div class="view-cube" aria-hidden="true">
+            <span>TOP</span>
+          </div>
+          <div class="viewer-status" id="viewerStatus">
+            <span class="status-dot"></span>
+            <span>Ready — import a STEP file</span>
+          </div>
+          <div class="loading-overlay hidden" id="loadingOverlay">
+            <div class="spinner"></div>
+            <strong id="loadingTitle">Reading STEP geometry…</strong>
+            <span id="loadingDetail">Open CASCADE is processing the model locally.</span>
+          </div>
+        </section>
+
+        <aside class="panel right-panel">
+          <section class="panel-section finish-header">
+            <div class="eyebrow">FINISH LIBRARY</div>
+            <h2>Choose a surface</h2>
+            <p class="help">All dimensions are applied in real model millimetres.</p>
+            <div class="finish-tabs" id="finishTabs"></div>
+            <input class="finish-search" id="finishSearch" type="search" placeholder="Search code or finish…" />
+            <select class="select finish-select" id="finishSelect" aria-label="Surface finish"></select>
+          </section>
+          <div id="presetList" class="preset-list preset-detail"></div>
+          <section id="customControls" class="panel-section custom-controls">
+            <h3 id="sizingTitle">Finish adjustments</h3>
+            <label class="file-row hidden" id="heightMapRow">
+              <span id="customFileName">Choose grayscale image</span>
+              <input id="heightMapInput" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+              <b>Browse</b>
+            </label>
+            <label class="range-row" id="scaleMultiplierRow">
+              <span>Spacing <output id="scaleMultiplierValue">100%</output></span>
+              <input id="scaleMultiplier" type="range" min="25" max="400" step="5" value="100" />
+            </label>
+            <label class="range-row" id="finishDepthRow">
+              <span>Depth <output id="finishDepthValue">0.010 mm</output></span>
+              <input id="finishDepth" type="range" min="0.001" max="1" step="0.001" value="0.010" />
+            </label>
+            <label class="range-row" id="finishRotationRow">
+              <span>Rotation <output id="finishRotationValue">0°</output></span>
+              <input id="finishRotation" type="range" min="-180" max="180" step="5" value="0" />
+            </label>
+            <div class="accuracy-warning hidden" id="accuracyWarning">Adjusted finish — no longer dimensionally matched to the reference preset.</div>
+            <button class="button compact reset-finish" id="resetFinishButton">Reset reference values</button>
+          </section>
+          <section class="apply-bar">
+            <div class="assignment-summary">
+              <span>Apply to</span>
+              <strong id="applySummary">Select at least one face</strong>
+            </div>
+            <button class="button primary wide" id="applyButton" disabled>Apply finish</button>
+            <p class="legal-note">Standards retain reference metadata; generated relief is a printable approximation. Adjustments are clearly flagged.</p>
+          </section>
+        </aside>
+      </main>
+
+      <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+      <dialog id="exportDialog" class="dialog">
+        <form method="dialog">
+          <div class="dialog-heading">
+            <div>
+              <div class="eyebrow">PRINT EXPORT</div>
+              <h2>Prepare manufacturing mesh</h2>
+            </div>
+            <button class="icon-button" value="cancel" aria-label="Close">×</button>
+          </div>
+          <div class="format-grid">
+            <label class="format-card selected">
+              <input type="radio" name="format" value="3mf" checked />
+              <strong>3MF</strong>
+              <span>Recommended · units retained</span>
+            </label>
+            <label class="format-card">
+              <input type="radio" name="format" value="stl" />
+              <strong>STL</strong>
+              <span>Maximum slicer compatibility</span>
+            </label>
+          </div>
+          <div class="export-checks" id="exportChecks"></div>
+          <div class="dialog-actions">
+            <button class="button ghost" value="cancel">Cancel</button>
+            <button class="button primary" id="confirmExportButton" value="default">Generate & download</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="licensesDialog" class="dialog licenses-dialog">
+        <form method="dialog">
+          <div class="dialog-heading">
+            <div>
+              <div class="eyebrow">OPEN-SOURCE NOTICE</div>
+              <h2>About Finish Forge Studio</h2>
+            </div>
+            <button class="icon-button" value="cancel" aria-label="Close">×</button>
+          </div>
+          <p class="license-intro">Finish Forge Studio 0.3.0 processes CAD locally in your browser. Original project code is copyright © 2026 Carlos Rojas and licensed under AGPL-3.0-or-later.</p>
+          <div class="license-list">
+            <div><strong>Finish Forge Studio</strong><span>AGPL-3.0-or-later</span><a href="https://github.com/carlosrojas1b-stack/finish-forge-studio/blob/main/LICENSE" target="_blank" rel="noreferrer">Project license and source</a></div>
+            <div><strong>Three.js 0.180.x</strong><span>MIT License</span><a href="/licenses/THREE-MIT.txt" target="_blank">View bundled notice</a></div>
+            <div><strong>occt-import-js 0.0.23</strong><span>GNU LGPL 2.1</span><a href="/licenses/OCCT-IMPORT-JS-LGPL-2.1.txt" target="_blank">View bundled license</a></div>
+            <div><strong>Open CASCADE Technology</strong><span>GNU LGPL 2.1 with exception</span><a href="/licenses/OPEN-CASCADE-LGPL-2.1-EXCEPTION.txt" target="_blank">View bundled license</a></div>
+          </div>
+          <p class="license-footnote">Third-party components remain under their respective licenses. MT, Mold-Tech, SPI, SPE, VDI, Open CASCADE, and Three.js names belong to their respective owners. No affiliation, endorsement, certification, or proprietary texture artwork is implied.</p>
+          <div class="dialog-actions">
+            <button class="button primary" value="cancel">Close</button>
+          </div>
+        </form>
+      </dialog>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

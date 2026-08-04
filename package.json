@@ -1,0 +1,23 @@
+{
+  "name": "finish-forge-studio",
+  "version": "0.3.0",
+  "description": "Local-first STEP face texturing for realistic 3D-printed injection-molding prototypes.",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "packageManager": "pnpm@11.9.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "occt-import-js": "0.0.23",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0",
+    "vitest": "^3.2.0"
+  }
+}
